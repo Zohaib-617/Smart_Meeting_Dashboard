@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { meetings, people } from '../data/mockMeeting'
+import { meetings, people, actionItems } from '../data/mockMeeting'
 
 const MeetingsContext = createContext();
 
@@ -9,6 +9,8 @@ export const MeetingsProvider = ({ children }) => {
     const [peopleState, setPeople] = useState(people);
 
     const [searchQuery, setSearchQuery] = useState("");
+
+     const [actionItemsState, setActionItems] = useState(actionItems);
 
     const [activeFilters, setActiveFilters] = useState({});
 
@@ -25,6 +27,9 @@ export const MeetingsProvider = ({ children }) => {
 
                 searchQuery,
                 setSearchQuery,
+
+                actionItems: actionItemsState,
+                setActionItems,
 
                 activeFilters,
                 setActiveFilters,
