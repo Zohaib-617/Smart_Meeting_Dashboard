@@ -16,6 +16,11 @@ export const MeetingsProvider = ({ children }) => {
 
     const [selectedMeetingId, setSelectedMeetingId] = useState(null);
 
+    const deleteMeeting = (meetingId) => {
+    setMeetings(meetingsState.filter((m) => m.id !== meetingId));
+    setActionItems(actionItemsState.filter((a) => a.meetingId !== meetingId));
+};
+
     return (
         <MeetingsContext.Provider
             value={{
@@ -36,6 +41,8 @@ export const MeetingsProvider = ({ children }) => {
 
                 selectedMeetingId,
                 setSelectedMeetingId,
+
+                deleteMeeting,
             }}
         >
             {children}
