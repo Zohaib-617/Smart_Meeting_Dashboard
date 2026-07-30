@@ -7,6 +7,10 @@ import MeetingDetail from './pages/MeetingDetail'
 import Sidebar from './components/layout/Sidebar'
 import Topbar from './components/layout/Topbar'
 import { MeetingsProvider } from './context/MeetingContext'
+import ActionItemsPage from './pages/ActionItemsPage'
+import PeoplePage from './pages/PeoplePage'
+import StatsPage from './pages/StatsPage'
+import AllMeetingsPage from './pages/AllMeetingsPage'
 const App = () => {
   return (
     <MeetingsProvider>
@@ -16,11 +20,14 @@ const App = () => {
           <div className="app-main">
             <Topbar />
             <div className="app-content">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/upload" element={<UploadPage />} />
-                <Route path="/meetings" element={<Dashboard />} />
-              </Routes>
+             <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/upload" element={<UploadPage />} />
+              <Route path="/meetings" element={<AllMeetingsPage />} />
+              <Route path="/action-items" element={<ActionItemsPage />} />
+              <Route path="/people" element={<PeoplePage />} />
+              <Route path="/stats" element={<StatsPage />} />
+            </Routes>
             </div>
           </div>
         </div>

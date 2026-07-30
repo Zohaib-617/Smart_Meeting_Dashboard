@@ -23,7 +23,11 @@ export const MeetingsProvider = ({ children }) => {
 };
 const updateMeeting = (updatedMeeting) => {
     setMeetings(
-        meetingsState.map((m) => (m.id === updatedMeeting.id ? updatedMeeting : m))
+        meetingsState.map((m) =>
+            m.id === updatedMeeting.id
+                ? { ...updatedMeeting, updatedAt: new Date().toISOString() }
+                : m
+        )
     );
 };
 

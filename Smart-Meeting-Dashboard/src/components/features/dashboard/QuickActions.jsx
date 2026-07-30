@@ -1,4 +1,3 @@
-// components/features/dashboard/QuickActions.jsx
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Upload, Search, BarChart3, CheckSquare } from 'lucide-react'
@@ -16,7 +15,7 @@ const QuickActions = () => {
         <Search size={20} />
         <span>Search all meetings</span>
       </button>
-      <button className="quick-action-card quick-action-stats" onClick={() => document.querySelector('.stats-overview')?.scrollIntoView({ behavior: 'smooth' })}>
+      <button className="quick-action-card quick-action-stats" onClick={() => navigate('/stats')}>
         <BarChart3 size={20} />
         <span>View statistics</span>
       </button>

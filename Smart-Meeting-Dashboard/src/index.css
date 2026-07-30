@@ -111,18 +111,29 @@ body {
 /* Topbar */
 .topbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 12px 24px;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+
+.topbar-search {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .topbar-search input {
   border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  width: 280px;
+  border-radius: 999px;
+  padding: 10px 20px;
+  width: 420px;
+  font-size: 14px;
+}
+
+.topbar-user {
+  margin-left: auto;
 }
 
 .avatar {
@@ -471,6 +482,104 @@ body {
   justify-content: flex-end;
   gap: 8px;
   margin-top: 16px;
+}
+
+.people-meetings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.people-meeting-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.people-person-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.people-person-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.people-task-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.all-meetings-search {
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 12px 20px;
+  width: 420px;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.team-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.team-tag {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+
+.team-tag-active {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.team-tag-ghost {
+  background: none;
+  border: 1px dashed var(--color-border);
+  color: var(--color-secondary);
+}
+
+.team-tag-add-input {
+  display: flex;
+  gap: 6px;
+}
+
+.team-tag-add-input input {
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  width: 120px;
+}
+
+.team-tag-add-input button {
+  border: none;
+  background: var(--color-accent);
+  color: #412402;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 /* Responsive */

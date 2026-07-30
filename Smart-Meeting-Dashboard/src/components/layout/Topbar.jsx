@@ -1,4 +1,4 @@
-// Topbar.jsx
+// components/layout/Topbar.jsx
 import React from 'react'
 
 const Topbar = () => {
