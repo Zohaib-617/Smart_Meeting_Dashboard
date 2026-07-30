@@ -19,6 +19,12 @@ export const MeetingsProvider = ({ children }) => {
     const deleteMeeting = (meetingId) => {
     setMeetings(meetingsState.filter((m) => m.id !== meetingId));
     setActionItems(actionItemsState.filter((a) => a.meetingId !== meetingId));
+
+};
+const updateMeeting = (updatedMeeting) => {
+    setMeetings(
+        meetingsState.map((m) => (m.id === updatedMeeting.id ? updatedMeeting : m))
+    );
 };
 
     return (
@@ -43,6 +49,8 @@ export const MeetingsProvider = ({ children }) => {
                 setSelectedMeetingId,
 
                 deleteMeeting,
+                updateMeeting,
+               
             }}
         >
             {children}

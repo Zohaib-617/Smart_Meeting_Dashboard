@@ -1,7 +1,9 @@
 import { useMemo } from "react";
-import { actionItems } from '../data/mockMeeting';
+import { useMeetingsContext } from '../context/MeetingContext';
 
 const useActionItems = ({ meetingId, assigneeId } = {}) => {
+    const { actionItems } = useMeetingsContext();
+
     const filteredActionItems = useMemo(() => {
         return actionItems.filter((item) => {
             const matchesMeeting =
@@ -12,7 +14,7 @@ const useActionItems = ({ meetingId, assigneeId } = {}) => {
 
             return matchesMeeting && matchesAssignee;
         });
-    }, [meetingId, assigneeId]);
+    }, [actionItems, meetingId, assigneeId]);
 
     return filteredActionItems;
 };
