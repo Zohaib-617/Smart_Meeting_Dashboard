@@ -32,25 +32,6 @@ Teams generate a lot of meeting transcripts and very little structure around the
 - **Lucide React** for icons
 - **Vitest** for unit tests
 
-
-```
-
-## Project structure
-
-```
-src/
-├── data/            Mock data used as a fallback before real uploads exist
-├── context/          Global state (MeetingsContext)
-├── hooks/            Derived/filtered data logic (useFilteredMeetings, useActionItems)
-├── services/          Non-UI logic: transcript parsing, insight extraction, summarization
-├── components/
-│   ├── ui/            Reusable, domain-agnostic components (Button, Card, Modal, Badge...)
-│   ├── layout/        Sidebar and Topbar
-│   └── features/      Domain-specific components, grouped by feature
-├── pages/            Route-level views (Dashboard, All Meetings, Action Items, People, Stats)
-└── tests/            Unit tests for parsing and filtering logic
-```
-
 The architecture is layered deliberately: `data/` has no dependencies on anything else, `context/` and `hooks/` depend only on `data/`, `components/ui/` depends on nothing but React, and `components/features/` is the only layer that composes both UI primitives and shared state. This keeps each layer independently testable and swappable.
 
 ## Extraction approach
@@ -59,9 +40,5 @@ Decision and action-item extraction currently works by matching a small set of k
 
 **Planned improvement:** replace the rule-based extraction in `services/extractInsights.js` with an LLM-based call that reads the full transcript and returns structured decisions/action items/summary — this would remove the dependency on specific phrasing entirely.
 
-## Known limitations
 
-- Editing a meeting's transcript does not automatically re-run extraction — decisions and action items stay as originally extracted unless you hit "Regenerate" on the summary or manually re-upload
-- New people created from an uploaded transcript default to an "Unassigned" team until manually edited
-- `localStorage` persistence is permanent by design — there's no automatic reset; clearing it requires `localStorage.clear()` in the browser console
 
