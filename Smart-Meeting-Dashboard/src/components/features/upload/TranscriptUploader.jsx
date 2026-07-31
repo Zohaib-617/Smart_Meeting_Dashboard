@@ -6,6 +6,8 @@ import { extractInsights } from '../../../services/extractInsights'
 import { summarizeMeeting } from '../../../services/summarize'
 import { useMeetingsContext } from '../../../context/MeetingContext'
 
+let personCounter = 0
+
 const resolveParticipants = (speakerNames, people, setPeople) => {
   const updatedPeople = [...people]
   const participantIds = []
@@ -13,7 +15,8 @@ const resolveParticipants = (speakerNames, people, setPeople) => {
   speakerNames.forEach((name) => {
     let person = updatedPeople.find((p) => p.name.toLowerCase() === name.toLowerCase())
     if (!person) {
-      person = { id: `p-${Date.now()}-${name}`, name, team: 'Unassigned' }
+      personCounter += 1
+      person = { id: `p-new-${personCounter}-${Date.now()}`, name, team: 'Unassigned' }
       updatedPeople.push(person)
     }
     participantIds.push(person.id)
@@ -54,10 +57,17 @@ const TranscriptUploader = () => {
 
       const { decisions, actionItems: newActionItems } = extractInsights(meeting)
       meeting.decisions = decisions
+
+      const resolvedActionItems = newActionItems.map((item) => {
+        if (!item.assigneeName) return item
+        const person = people.find((p) => p.name.toLowerCase() === item.assigneeName.toLowerCase())
+        return { ...item, assigneeId: person ? person.id : null }
+      })
+
       meeting.summary = summarizeMeeting(meeting, decisions)
 
       setMeetings([...meetings, meeting])
-      setActionItems([...actionItems, ...newActionItems])
+      setActionItems([...actionItems, ...resolvedActionItems])
     } catch (err) {
       setError('Something went wrong reading that file.')
     } finally {
@@ -66,26 +76,26 @@ const TranscriptUploader = () => {
   }
 
   return (
-    <div className="transcript-uploader">
-      <div className="upload-dropzone">
-        <div className="upload-card">
-          <div className="upload-icon-square" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" className="upload-icon-svg">
-              <path d="M12 16V5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              <path d="M8.5 8.5L12 5l3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M5 15.5v1.8a1.7 1.7 0 0 0 1.7 1.7h10.6a1.7 1.7 0 0 0 1.7-1.7v-1.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-          </div>
+    <div>
+      <div className="transcript-uploader">
+        <div className="upload-dropzone">
+          <div className="upload-card">
+            <div className="upload-icon-square" aria-hidden="true">
+              <svg className="upload-icon-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 34c0-6.6 5.4-12 12-12 2.8 0 5.3 1 7.2 2.8 1.7-3.3 5.1-5.5 8.9-5.5 5.5 0 10 4.5 10 10 0 .8-.1 1.6-.3 2.4 3.1 1.1 5.3 4.1 5.3 7.6 0 4.4-3.6 8-8 8H18c-4.4 0-8-3.6-8-8 0-3.7 2.5-6.8 6-7.7.1-.7.2-1.4.2-2.1Z" fill="currentColor" />
+                <path d="M32 22v14" stroke="white" strokeWidth="3" strokeLinecap="round" />
+                <path d="M25 29l7-7 7 7" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
 
-          <div className="upload-center">
-            {isLoading ? <LoadingSpinner /> : <p>Upload your transcript</p>}
-            <span className="upload-hint">
-              Choose a .txt file to turn it into a polished meeting summary.
-            </span>
-            <label className="btn btn-primary upload-button">
-              <input type="file" accept=".txt" onChange={handleFileChange} disabled={isLoading} />
-              {isLoading ? 'Uploading…' : 'Choose file'}
-            </label>
+            <div className="upload-center">
+              <p>Upload a transcript</p>
+              <span className="upload-hint">Drop a .txt file here or choose one from your device.</span>
+              <label className={`btn btn-primary upload-button ${isLoading ? 'is-loading' : ''}`}>
+                {isLoading ? <LoadingSpinner /> : 'Select file'}
+                <input type="file" accept=".txt" onChange={handleFileChange} disabled={isLoading} />
+              </label>
+            </div>
           </div>
         </div>
       </div>

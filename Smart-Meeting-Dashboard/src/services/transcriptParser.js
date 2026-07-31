@@ -7,18 +7,20 @@ export const parseTranscript = (rawText) => {
   const body = lines.slice(1).join('\n')
 
   const speakerNames = []
-  lines.forEach((line) => {
-    const match = line.match(/^([A-Za-z][A-Za-z]*):/)
-    if (match) {
-      const name = match[1].trim()
-      if (!NON_SPEAKER_LABELS.includes(name.toLowerCase()) && !speakerNames.includes(name)) {
-        speakerNames.push(name)
-      }
+  const speakerPattern = /(?:^|\s)([A-Z][a-zA-Z]*):/g
+  let match
+
+  while ((match = speakerPattern.exec(body)) !== null) {
+    const name = match[1].trim()
+    const isLabel = NON_SPEAKER_LABELS.includes(name.toLowerCase())
+    const alreadyFound = speakerNames.some((s) => s.toLowerCase() === name.toLowerCase())
+    if (!isLabel && !alreadyFound) {
+      speakerNames.push(name)
     }
-  })
+  }
 
   return {
-    id: `m-${Date.now()}`,
+    id: `m-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     title,
     date: new Date().toISOString().slice(0, 10),
     team: 'Unassigned',

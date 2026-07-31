@@ -4,8 +4,7 @@ import MeetingList from '../components/features/meeting/MeetingList'
 import { useMeetingsContext } from '../context/MeetingContext'
 
 const AllMeetingsPage = () => {
-  const { meetings, setSelectedMeetingId } = useMeetingsContext()
-  const [searchQuery, setSearchQuery] = useState('')
+  const { meetings, setSelectedMeetingId, searchQuery, setSearchQuery } = useMeetingsContext()
   const [activeTeam, setActiveTeam] = useState(null)
   const [newTag, setNewTag] = useState('')
   const [isAddingTag, setIsAddingTag] = useState(false)

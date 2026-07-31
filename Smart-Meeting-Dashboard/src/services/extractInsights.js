@@ -11,14 +11,20 @@ export const extractInsights = (meeting) => {
 
   const actionItemLines = lines.filter((line) => /action:|todo:|will do|assigned to/i.test(line))
 
-  const actionItems = actionItemLines.map((line, index) => ({
-    id: `${meeting.id}-a${index}`,
-    meetingId: meeting.id,
-    task: line.trim(),
-    assigneeId: null,
-    dueDate: null,
-    status: 'open',
-  }))
+  const actionItems = actionItemLines.map((line, index) => {
+    const assigneeMatch = line.match(/(?:action:|todo:)?\s*([A-Z][a-zA-Z]*)\s+will\b/i)
+    const assigneeName = assigneeMatch ? assigneeMatch[1] : null
+
+    return {
+      id: `${meeting.id}-a${index}`,
+      meetingId: meeting.id,
+      task: line.trim(),
+      assigneeName,
+      assigneeId: null,
+      dueDate: null,
+      status: 'open',
+    }
+  })
 
   return { decisions, actionItems }
 }

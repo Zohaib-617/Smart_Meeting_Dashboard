@@ -1,48 +1,118 @@
 // pages/StatsPage.jsx
 import React from 'react'
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from 'recharts'
 import { useMeetingsContext } from '../context/MeetingContext'
+import {
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  ZAxis,
+  Tooltip,
+  CartesianGrid,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts'
+
+
+const EVENT_LEVELS = { Uploaded: 3, Edited: 2, Deleted: 1 }
+const EVENT_COLORS = { Uploaded: '#2563EB', Edited: '#D97706', Deleted: '#DC2626' }
+
+const formatDateTime = (timestamp) => {
+  const d = new Date(timestamp)
+  return d.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
+const CustomTooltip = ({ active, payload }) => {
+  if (!active || !payload || payload.length === 0) return null
+  const point = payload[0].payload
+
+  return (
+    <div
+      style={{
+        background: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
+        borderRadius: '8px',
+        padding: '8px 12px',
+        fontSize: '13px',
+      }}
+    >
+      <div style={{ fontWeight: 500 }}>{point.title}</div>
+      <div style={{ color: 'var(--color-secondary)' }}>
+        {point.type} · {formatDateTime(point.time)}
+      </div>
+    </div>
+  )
+}
 
 const StatsPage = () => {
-  const { meetings } = useMeetingsContext()
+  const { meetings, deletedLog } = useMeetingsContext()
   const uploaded = meetings.filter((m) => m.source === 'uploaded')
 
-  const countsByDate = {}
+  const events = []
 
   uploaded.forEach((m) => {
     if (m.createdAt) {
-      const day = m.createdAt.slice(0, 10)
-      countsByDate[day] = countsByDate[day] || { date: day, uploaded: 0, edited: 0 }
-      countsByDate[day].uploaded += 1
+      events.push({ type: 'Uploaded', title: m.title, time: new Date(m.createdAt).getTime() })
     }
     if (m.updatedAt) {
-      const day = m.updatedAt.slice(0, 10)
-      countsByDate[day] = countsByDate[day] || { date: day, uploaded: 0, edited: 0 }
-      countsByDate[day].edited += 1
+      events.push({ type: 'Edited', title: m.title, time: new Date(m.updatedAt).getTime() })
     }
   })
 
-  const chartData = Object.values(countsByDate).sort((a, b) => a.date.localeCompare(b.date))
+  deletedLog.forEach((entry) => {
+    events.push({ type: 'Deleted', title: entry.title, time: new Date(entry.deletedAt).getTime() })
+  })
+
+  const chartData = events.map((e) => ({ ...e, level: EVENT_LEVELS[e.type] }))
+  const eventTypes = ['Uploaded', 'Edited', 'Deleted']
 
   return (
     <div>
       <h2>Meeting activity over time</h2>
       {chartData.length === 0 ? (
         <p style={{ color: 'var(--color-secondary)' }}>
-          No uploaded meetings yet. Upload a transcript to see activity here.
+          No activity yet. Upload a transcript to see activity here.
         </p>
       ) : (
-        <div className="card" style={{ height: '320px' }}>
+        <div className="card" style={{ height: '340px' }}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+            <ScatterChart margin={{ top: 10, right: 20, bottom: 20, left: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-              <XAxis dataKey="date" fontSize={12} />
-              <YAxis allowDecimals={false} fontSize={12} />
-              <Tooltip />
+              <XAxis
+                dataKey="time"
+                type="number"
+                domain={['dataMin - 3600000', 'dataMax + 3600000']}
+                tickFormatter={formatDateTime}
+                fontSize={11}
+              />
+              <YAxis
+                dataKey="level"
+                type="number"
+                domain={[0, 4]}
+                ticks={[1, 2, 3]}
+                tickFormatter={(value) =>
+                  Object.keys(EVENT_LEVELS).find((key) => EVENT_LEVELS[key] === value) || ''
+                }
+                fontSize={12}
+                width={80}
+              />
+              <ZAxis range={[80, 80]} />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Line type="monotone" dataKey="uploaded" stroke="#2563EB" name="Uploaded" strokeWidth={2} />
-              <Line type="monotone" dataKey="edited" stroke="#D97706" name="Edited" strokeWidth={2} />
-            </LineChart>
+              {eventTypes.map((type) => (
+                <Scatter
+                  key={type}
+                  name={type}
+                  data={chartData.filter((d) => d.type === type)}
+                  fill={EVENT_COLORS[type]}
+                />
+              ))}
+            </ScatterChart>
           </ResponsiveContainer>
         </div>
       )}
