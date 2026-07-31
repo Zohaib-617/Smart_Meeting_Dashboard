@@ -66,11 +66,27 @@ const TranscriptUploader = () => {
   }
 
   return (
-    <div>
-      <div className="transcript-uploader">
-        <input type="file" accept=".txt" onChange={handleFileChange} disabled={isLoading} />
-        <div className="upload-center">
-          {isLoading ? <LoadingSpinner /> : <p>Choose a file to upload</p>}
+    <div className="transcript-uploader">
+      <div className="upload-dropzone">
+        <div className="upload-card">
+          <div className="upload-icon-square" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" className="upload-icon-svg">
+              <path d="M12 16V5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              <path d="M8.5 8.5L12 5l3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M5 15.5v1.8a1.7 1.7 0 0 0 1.7 1.7h10.6a1.7 1.7 0 0 0 1.7-1.7v-1.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </div>
+
+          <div className="upload-center">
+            {isLoading ? <LoadingSpinner /> : <p>Upload your transcript</p>}
+            <span className="upload-hint">
+              Choose a .txt file to turn it into a polished meeting summary.
+            </span>
+            <label className="btn btn-primary upload-button">
+              <input type="file" accept=".txt" onChange={handleFileChange} disabled={isLoading} />
+              {isLoading ? 'Uploading…' : 'Choose file'}
+            </label>
+          </div>
         </div>
       </div>
       {error && <p className="upload-error">{error}</p>}
