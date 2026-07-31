@@ -1,6 +1,7 @@
 // components/layout/Topbar.jsx
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Search } from 'lucide-react'
 import { useMeetingsContext } from '../../context/MeetingContext'
 
 const Topbar = () => {
@@ -17,6 +18,7 @@ const Topbar = () => {
     <div className="topbar">
       <div className="mn-logo">MN</div>
       <div className="topbar-search">
+        <Search size={16} className="topbar-search-icon" />
         <input
           type="text"
           placeholder="Search transcripts"
