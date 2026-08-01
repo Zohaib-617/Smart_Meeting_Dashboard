@@ -1,11 +1,13 @@
 // components/layout/Topbar.jsx
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search } from 'lucide-react'
+import { Search, Sun, Moon } from 'lucide-react'
 import { useMeetingsContext } from '../../context/MeetingContext'
+import { useTheme } from '../../hooks/useTheme'
 
 const Topbar = () => {
   const { searchQuery, setSearchQuery } = useMeetingsContext()
+  const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
 
   const handleSearchSubmit = (e) => {
@@ -27,7 +29,10 @@ const Topbar = () => {
           onKeyDown={handleSearchSubmit}
         />
       </div>
-      <div className="topbar-user">
+      <div className="topbar-right">
+        <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+          {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
+        </button>
         <div className="avatar">U</div>
       </div>
     </div>

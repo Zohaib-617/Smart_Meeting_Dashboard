@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { meetings, people, actionItems } from '../data/mockMeeting';
 
 const MeetingsContext = createContext();
 
@@ -13,10 +12,11 @@ const loadFromStorage = (key, fallback) => {
 };
 
 export const MeetingsProvider = ({ children }) => {
-    const [meetingsState, setMeetings] = useState(() => loadFromStorage('meetings', meetings));
-    const [peopleState, setPeople] = useState(() => loadFromStorage('people', people));
-    const [actionItemsState, setActionItems] = useState(() => loadFromStorage('actionItems', actionItems));
+    const [meetingsState, setMeetings] = useState(() => loadFromStorage('meetings', []));
+    const [peopleState, setPeople] = useState(() => loadFromStorage('people', []));
+    const [actionItemsState, setActionItems] = useState(() => loadFromStorage('actionItems', []));
     const [deletedLog, setDeletedLog] = useState(() => loadFromStorage('deletedLog', []));
+    const [statusLog, setStatusLog] = useState(() => loadFromStorage('statusLog', []));
 
     const [searchQuery, setSearchQuery] = useState("");
     const [activeFilters, setActiveFilters] = useState({});
@@ -38,6 +38,10 @@ export const MeetingsProvider = ({ children }) => {
     localStorage.setItem('deletedLog', JSON.stringify(deletedLog));
     }, [deletedLog]);
 
+    useEffect(() => {
+    localStorage.setItem('statusLog', JSON.stringify(statusLog));
+}, [statusLog]);
+
 
     const deleteMeeting = (meetingId) => {
     const meetingToDelete = meetingsState.find((m) => m.id === meetingId);
@@ -57,6 +61,27 @@ export const MeetingsProvider = ({ children }) => {
             )
         );
     };
+
+    const updateActionItemStatus = (itemId, newStatus) => {
+    const item = actionItemsState.find((i) => i.id === itemId);
+    const meeting = item ? meetingsState.find((m) => m.id === item.meetingId) : null;
+
+    setActionItems(
+        actionItemsState.map((i) =>
+            i.id === itemId ? { ...i, status: newStatus } : i
+        )
+    );
+
+    setStatusLog([
+        ...statusLog,
+        {
+            task: item ? item.task : 'Unknown task',
+            meetingTitle: meeting ? meeting.title : 'Unknown meeting',
+            newStatus,
+            changedAt: new Date().toISOString(),
+        },
+        ]);
+};
 
     return (
         <MeetingsContext.Provider
@@ -83,6 +108,9 @@ export const MeetingsProvider = ({ children }) => {
 
                 deleteMeeting,
                 updateMeeting,
+
+                statusLog,
+                updateActionItemStatus,
             }}
         >
             {children}

@@ -8,7 +8,7 @@ import { useMeetingsContext } from '../../../context/MeetingContext'
 
 let personCounter = 0
 
-const resolveParticipants = (speakerNames, people, setPeople) => {
+const resolveParticipants = (speakerNames, people) => {
   const updatedPeople = [...people]
   const participantIds = []
 
@@ -22,8 +22,7 @@ const resolveParticipants = (speakerNames, people, setPeople) => {
     participantIds.push(person.id)
   })
 
-  setPeople(updatedPeople)
-  return participantIds
+  return { participantIds, updatedPeople }
 }
 
 const TranscriptUploader = () => {
@@ -53,14 +52,19 @@ const TranscriptUploader = () => {
       }
 
       const meeting = parseTranscript(rawText)
-      meeting.participantIds = resolveParticipants(meeting.speakerNames, people, setPeople)
+
+      const { participantIds, updatedPeople } = resolveParticipants(meeting.speakerNames, people)
+      meeting.participantIds = participantIds
+      setPeople(updatedPeople)
 
       const { decisions, actionItems: newActionItems } = extractInsights(meeting)
       meeting.decisions = decisions
 
       const resolvedActionItems = newActionItems.map((item) => {
         if (!item.assigneeName) return item
-        const person = people.find((p) => p.name.toLowerCase() === item.assigneeName.toLowerCase())
+        const person = updatedPeople.find(
+          (p) => p.name.toLowerCase() === item.assigneeName.toLowerCase()
+        )
         return { ...item, assigneeId: person ? person.id : null }
       })
 
