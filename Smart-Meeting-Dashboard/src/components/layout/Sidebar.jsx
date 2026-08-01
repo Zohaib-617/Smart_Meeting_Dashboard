@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Menu, LayoutDashboard, Upload, List, CheckSquare, Users } from 'lucide-react'
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   const navItems = [
@@ -14,38 +14,51 @@ const Sidebar = () => {
     { label: 'People', path: '/people', icon: Users },
   ]
 
-  return (
-    <div className={isCollapsed ? 'sidebar sidebar-collapsed' : 'sidebar'}>
-      <div className="sidebar-top">
-        {!isCollapsed && <div className="sidebar-logo">Meeting Notes</div>}
-        <button
-          className="sidebar-toggle"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          aria-label="Toggle sidebar"
-        >
-          <Menu size={18} />
-        </button>
-      </div>
+  const sidebarClass = [
+    'sidebar',
+    isCollapsed ? 'sidebar-collapsed' : '',
+    isOpen ? 'sidebar-open' : 'sidebar-closed',
+  ].join(' ').trim()
 
-      <nav className="sidebar-nav">
-        {navItems.map((item) => {
-          const Icon = item.icon
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                isActive ? 'nav-item nav-item-active' : 'nav-item'
-              }
-              title={isCollapsed ? item.label : undefined}
-            >
-              <Icon size={18} />
-              {!isCollapsed && <span>{item.label}</span>}
-            </NavLink>
-          )
-        })}
-      </nav>
-    </div>
+  return (
+    <>
+      <div className={sidebarClass}>
+        <div className="sidebar-top">
+          {!isCollapsed && <div className="sidebar-logo">Meeting Notes</div>}
+          <button
+            className="sidebar-toggle"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            aria-label="Toggle sidebar"
+          >
+            <Menu size={18} />
+          </button>
+        </div>
+
+        <nav className="sidebar-nav">
+          {navItems.map((item) => {
+            const Icon = item.icon
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  isActive ? 'nav-item nav-item-active' : 'nav-item'
+                }
+                title={isCollapsed ? item.label : undefined}
+                onClick={onClose}
+              >
+                <Icon size={18} />
+                {!isCollapsed && <span>{item.label}</span>}
+              </NavLink>
+            )
+          })}
+        </nav>
+      </div>
+      <div
+        className={isOpen ? 'sidebar-backdrop sidebar-backdrop-visible' : 'sidebar-backdrop'}
+        onClick={onClose}
+      />
+    </>
   )
 }
 

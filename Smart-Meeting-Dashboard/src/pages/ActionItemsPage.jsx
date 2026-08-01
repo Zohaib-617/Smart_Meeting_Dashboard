@@ -7,8 +7,10 @@ import { useMeetingsContext } from '../context/MeetingContext'
 const initials = (name) =>
   name.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase()
 
+const STATUS_OPTIONS = ['open', 'done', 'overdue']
+
 const ActionItemsPage = () => {
-  const { meetings, people, actionItems } = useMeetingsContext()
+  const { meetings, people, actionItems, updateActionItemStatus } = useMeetingsContext()
 
   const uploadedMeetings = meetings.filter((m) => m.source === 'uploaded')
   const relevantMeetings = uploadedMeetings.filter((m) =>
@@ -54,6 +56,17 @@ const ActionItemsPage = () => {
                       </div>
                     </div>
                     <Badge status={item.status} />
+                    <select
+                      className="status-select"
+                      value={item.status}
+                      onChange={(e) => updateActionItemStatus(item.id, e.target.value)}
+                    >
+                      {STATUS_OPTIONS.map((status) => (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )
               })}
