@@ -664,6 +664,56 @@ body {
   color: #B91C1C;
 }
 
+/* Dark theme overrides */
+[data-theme="dark"] {
+  --color-bg: #12141C;
+  --color-surface: #1B1E29;
+  --color-border: #2A2D3A;
+  --color-ink: #F1F2F6;
+  --color-secondary: #9CA3AF;
+  --color-accent-soft: rgba(217, 160, 42, 0.16);
+}
+
+[data-theme="dark"] body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.status-select {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 12px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
 /* Responsive */
 @media (max-width: 720px) {
   .app-layout {

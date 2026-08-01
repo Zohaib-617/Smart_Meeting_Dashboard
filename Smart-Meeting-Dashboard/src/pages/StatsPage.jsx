@@ -14,8 +14,13 @@ import {
 } from 'recharts'
 
 
-const EVENT_LEVELS = { Uploaded: 3, Edited: 2, Deleted: 1 }
-const EVENT_COLORS = { Uploaded: '#2563EB', Edited: '#D97706', Deleted: '#DC2626' }
+const EVENT_LEVELS = { Uploaded: 4, Edited: 3, 'Status changed': 2, Deleted: 1 }
+const EVENT_COLORS = {
+  Uploaded: '#2563EB',
+  Edited: '#D97706',
+  'Status changed': '#16A34A',
+  Deleted: '#DC2626',
+}
 
 const formatDateTime = (timestamp) => {
   const d = new Date(timestamp)
@@ -50,7 +55,7 @@ const CustomTooltip = ({ active, payload }) => {
 }
 
 const StatsPage = () => {
-  const { meetings, deletedLog } = useMeetingsContext()
+  const { meetings, deletedLog, statusLog } = useMeetingsContext()
   const uploaded = meetings.filter((m) => m.source === 'uploaded')
 
   const events = []
@@ -68,8 +73,16 @@ const StatsPage = () => {
     events.push({ type: 'Deleted', title: entry.title, time: new Date(entry.deletedAt).getTime() })
   })
 
+  statusLog.forEach((entry) => {
+    events.push({
+      type: 'Status changed',
+      title: `${entry.meetingTitle} — ${entry.task} → ${entry.newStatus}`,
+      time: new Date(entry.changedAt).getTime(),
+    })
+  })
+
   const chartData = events.map((e) => ({ ...e, level: EVENT_LEVELS[e.type] }))
-  const eventTypes = ['Uploaded', 'Edited', 'Deleted']
+  const eventTypes = ['Uploaded', 'Edited', 'Status changed', 'Deleted']
 
   return (
     <div>
@@ -79,7 +92,7 @@ const StatsPage = () => {
           No activity yet. Upload a transcript to see activity here.
         </p>
       ) : (
-        <div className="card" style={{ height: '340px' }}>
+        <div className="card" style={{ height: '360px' }}>
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 10, right: 20, bottom: 20, left: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
@@ -93,13 +106,13 @@ const StatsPage = () => {
               <YAxis
                 dataKey="level"
                 type="number"
-                domain={[0, 4]}
-                ticks={[1, 2, 3]}
+                domain={[0, 5]}
+                ticks={[1, 2, 3, 4]}
                 tickFormatter={(value) =>
                   Object.keys(EVENT_LEVELS).find((key) => EVENT_LEVELS[key] === value) || ''
                 }
                 fontSize={12}
-                width={80}
+                width={100}
               />
               <ZAxis range={[80, 80]} />
               <Tooltip content={<CustomTooltip />} />
