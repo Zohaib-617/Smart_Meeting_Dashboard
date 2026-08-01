@@ -1,5 +1,6 @@
 // components/features/upload/TranscriptUploader.jsx
 import React, { useState } from 'react'
+import mammoth from 'mammoth/mammoth.browser'
 import LoadingSpinner from '../../ui/LoadingSpinner'
 import { parseTranscript } from '../../../services/transcriptParser'
 import { extractInsights } from '../../../services/extractInsights'
@@ -25,6 +26,24 @@ const resolveParticipants = (speakerNames, people) => {
   return { participantIds, updatedPeople }
 }
 
+const SUPPORTED_EXTENSIONS = ['.txt', '.md', '.docx']
+
+const extractTextFromFile = async (file) => {
+  const name = file.name.toLowerCase()
+
+  if (name.endsWith('.txt') || name.endsWith('.md')) {
+    return file.text()
+  }
+
+  if (name.endsWith('.docx')) {
+    const arrayBuffer = await file.arrayBuffer()
+    const result = await mammoth.extractRawText({ arrayBuffer })
+    return result.value
+  }
+
+  throw new Error('unsupported')
+}
+
 const TranscriptUploader = () => {
   const { meetings, setMeetings, actionItems, setActionItems, people, setPeople } = useMeetingsContext()
   const [isLoading, setIsLoading] = useState(false)
@@ -36,15 +55,16 @@ const TranscriptUploader = () => {
 
     setError(null)
 
-    if (!file.name.endsWith('.txt')) {
-      setError('Only .txt files are supported right now.')
+    const isSupported = SUPPORTED_EXTENSIONS.some((ext) => file.name.toLowerCase().endsWith(ext))
+    if (!isSupported) {
+      setError('Supported file types: .txt, .md, .docx')
       return
     }
 
     setIsLoading(true)
 
     try {
-      const rawText = await file.text()
+      const rawText = await extractTextFromFile(file)
 
       if (!rawText.trim()) {
         setError('That file appears to be empty.')
@@ -73,7 +93,7 @@ const TranscriptUploader = () => {
       setMeetings([...meetings, meeting])
       setActionItems([...actionItems, ...resolvedActionItems])
     } catch (err) {
-      setError('Something went wrong reading that file.')
+      setError('Something went wrong reading that file. Try a .txt, .md, or .docx file.')
     } finally {
       setIsLoading(false)
     }
@@ -94,10 +114,15 @@ const TranscriptUploader = () => {
 
             <div className="upload-center">
               <p>Upload a transcript</p>
-              <span className="upload-hint">Drop a .txt file here or choose one from your device.</span>
+              <span className="upload-hint">Drop a .txt, .md, or .docx file here, or choose one.</span>
               <label className={`btn btn-primary upload-button ${isLoading ? 'is-loading' : ''}`}>
                 {isLoading ? <LoadingSpinner /> : 'Select file'}
-                <input type="file" accept=".txt" onChange={handleFileChange} disabled={isLoading} />
+                <input
+                  type="file"
+                  accept=".txt,.md,.docx"
+                  onChange={handleFileChange}
+                  disabled={isLoading}
+                />
               </label>
             </div>
           </div>
